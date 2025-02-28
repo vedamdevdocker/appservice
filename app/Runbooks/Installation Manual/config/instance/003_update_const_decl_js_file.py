@@ -7,7 +7,7 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 # Target directory and file
 grandparent_dir = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
 config_file = os.path.join(grandparent_dir, "config.ini")  # Updated file name
-target_dir = os.path.join(grandparent_dir, "application", "WebClient", "my-app", "src", "modules", "admin", "setups")
+target_dir = os.path.join(grandparent_dir, "application", "webclient", "my-app", "src", "modules", "admin", "setups")
 const_decl_file = os.path.join(target_dir, "ConstDecl.js")
 
 # Ensure config file exists
