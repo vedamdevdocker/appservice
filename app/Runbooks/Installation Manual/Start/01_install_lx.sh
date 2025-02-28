@@ -8,4 +8,4 @@ then
 fi
 
 # Run the Python script
-python3 01_start.py
+python 01_start.py
