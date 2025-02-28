@@ -1,0 +1,599 @@
+Master Data
+
+	Employee Creation 
+		Nav : Modules > Admin & Setup > Employee
+
+		1. Create Designations
+		2. Create Employee
+
+	User Creation and Grant access
+		Nav : Modules > User & Access 
+
+		1. Create New user
+		2. Grant Module access to user
+
+	Create UOMs
+		Nav : Modules > Common
+		
+		1. Create UOM ( Each, Dozen.. )
+		2. View UOMs
+
+	Create Currencies
+		Nav : Modules > Common
+		
+		1. Create Currencies
+		2. View Currencies
+		
+	Create Tax codes
+		Nav : Modules > Common
+		
+		1. Create Tax code 
+			(with some tax % Effective date, applicability)
+		2. View Tax codes
+		
+		For sales , purchase kind of taxes
+		
+	Create Default Tax Codes 
+		
+		Nav : Modules > Common
+		
+		1. Create Default Tax codes  & Link tax code
+		2. View Default Tax codes
+		
+		( Can be used later while setting up Companies)
+		
+	Create Exchange rates
+		Nav : Modules > Common
+		In general these rates are imported automatically
+		
+		1. Create Exchange Rates
+	
+	
+Create Business Partners
+
+	Create Suppliers and Customers	
+		Nav : Modules > Common
+		
+		1. Create Business partner
+			One supplier, One customer
+		2. List Business Partners
+		
+		
+Product category & Products 
+
+	Create Business Partners
+		Nav : Modules > Products
+		
+		1. Create Couple of Product Category 
+			f.ex , Wheels , Car Body, Car Interior
+			Fill some Tax Information as 10 (this needs to be removed later )
+		2. List Product categories
+		3. Create Products 
+			f. ex MRF tyres under Wheels category
+				CEAT tyres under Wheels category
+		4. List Products
+		
+Create BOM & Explode
+	Create Bill of Materials
+		Nav : Modules > Common
+		
+		1. Create a Bill Of Materials
+		2. View Bill Of Materials
+		3. Explode Bill of Materials
+
+		
+Legal Entity and Companies
+
+	Create Legal entity , group company and company
+
+		Nav : Modules > Common
+		
+		1. Create Legal entity
+		2. View Legal entity 
+		3. Create a Group Company
+		4. View Group companies
+		5. Create Company
+		6. View Group Companies
+		
+Accounts & Default Accounts
+
+	Create Accounts
+
+		Nav : Modules > Finanace
+		
+		1. Create Accounts (f.ex : sales, purchase )
+			Create couple of default accounts to use in next step
+		2. Create Default Accounts
+			Create default account header
+			Create default account lines 
+			
+Create Departments
+
+	Create Purchase and Sales Departments
+	
+		Nav : Modules > Common
+		
+		1. Create Department
+		2. View Departments
+		
+Inventory Master Data
+
+	Create Storage units
+		Nav : Modules > Inventory
+		1. Create Warehouses
+		2. Create Locations
+		3. Create Zones
+		4. Create Aisles
+		5. Create Rows
+		6. Create Racks
+		7. Create Bins
+		8. List Bins
+		
+Purchase Order Transactions
+
+	Create Purchase Order
+	
+		Nav : Modules > Purchase
+		
+		1. Create a Purchase Order (Keep PO in Draft status)
+			Create Purchase Order lines and save it.
+		2. View Purchase Order (Note the number )
+		3. Modify the Purchase Order and Approve it
+		4. View the Purchase Orders	 
+
+		
+Purchase Order Receipts & Put Away
+	
+		Nav : Modules > Inventory
+	
+		1. Create a Purchase Receipt  ( Select Received Status)
+			to receive the mateiral to a location
+		2. View Receipts
+		3. Put Away 
+			put away the material to an inventory storage
+		4. Search Inventory / View Inventory
+			To check where the material is stored
+			
+Purchase Order Receipts , Inspect & Put Away
+
+		Nav : Modules > Purchase, Modules>Inventory
+		
+		1. Create a Purchase Order 
+		2. Create a Purchase Receipt and select Inspection Status
+			to receive the mateiral to a location
+		3. View Receipts and see the Material is To Inspect status
+		4. Perform Inspection and accept some qty and reject some
+			Change the status to Inspected
+		5. View Inventory and you will not see the inspected material
+		6. View Inspections , now you can see how much accepted and rejected
+		7. Put Away (Select the Inspected Receipt )
+			Select an Inventory storage 
+		8. Search Inventory / View Inventory
+			To check where the material is stored
+			
+
+Purchase Invoice (Manual)
+		This can be used to create cost invoices for example
+
+		Nav : Modules > Finanace
+		
+		1. Create Purchase Invoice
+			Purchase Invoice lines, Distribute accounts
+		2. View Purchase invoices
+		3. Approve the Purchase invoice (Update menu item )
+			Change the status to Approved
+
+Journal Creation (Manual)
+
+		Nav : Modules > Finanace
+		1. Create Journal & Journal Lines (select New status)
+			Enter debit & Credit Accounts
+		2. View Journals (Get Journals)
+		3. Update the Journal status to approved
+		4. View Journals (Get Journals ) see if the Journal is approved
+		
+Journal Creation (Auto create PI Journal)
+
+		Nav : Modules > Finanace
+		1. Run Auto Create Journal 
+			Category (Purchase), Enter Purchase Invoice No
+		2. View Journal newly created (Get Journals)
+		
+
+Purchase Invoice (PO)
+	This can be used to create invoice for Purchase Order
+	This Invoice will be created automatically based on PO
+	Some setups needs to be checked before creating the Invoice
+	
+	1. Ensure Default account headers are set in the Company
+		Nav :  Modules > Common > View Companies
+		Important also set the same default account headers at the department level as well modules > common > Department 
+	2. Verify the Account types which are in default account headers matches to the CompanyConfig.js JSON for a company
+		WebClient Application Level Navigation (Nav : modules > finance > config > CompanyConfig.js)  
+			Improvement : In future a form will be created for this
+	
+	for example :
+		A. The PO : 200638898 96euros in the Company 3001 with VAT 6% for the item MRF(ITEM1001)
+		
+		Account Type				Debit (EUR)	Credit (EUR)	Account Category
+		Inventory/Purchases			90.57						Asset
+		Input VAT					5.43						Asset
+		Accounts Payable (Supplier 1)			48				Liability
+		Trade Creditors (Supplier 2)			48				Liability
+		Total						96			96
+		
+		If this is the way accounts should be posted for example , presuming 50% for two credit accounts 
+		
+		Create the following accounts in Module > Finance > Create Accounts
+		
+			Account					Account Type				Account Category		Default Account
+			INVPUR-15012539574 		Inventory					Asset					Yes
+			INVTAX-15012502362		Inventory Tax				Asset					Yes
+			accp-15012535190		Accounts Payable			Liability				Yes
+			ACPI-15012565830		Accounts Payable Internal	Liability				Yes
+			
+			Note : The Account Type must be unique while selecting default accounts as Yes
+			that means you can create two accounts as defult accounts with the same Account type
+			
+			Account					Account Type				Account Category		Default Account
+			INVPUR-15012539574 		Inventory					Asset					Yes
+			INVBUY-15012539574 		Inventory					Asset					Yes
+			
+			There should not be two accounts with the same account type with default flag as Yes under the same currency.
+			
+		B. Now the account setups are done as above Now go to create default account header and add all the above 4 accounts there
+			
+			Accounts for DEFALT HEADER : PURDEF
+
+			Invoice Number: PURDEF
+			Currency:
+			Account ID	Account Name	Account Number			Type						Balance
+			8015	accp-15012535190	3001-40002-15012535190	Accounts Payable			0.00
+			8020	ACPI-15012565830	3001-40002-15012565830	Accounts Payable Internal	0.00
+			8010	INVPUR-15012539574	3001-40002-15012539574	Inventory					0.00
+			8021	INVTAX-15012502362	3001-40002-15012502362	Inventory Tax				0.00
+			
+			While creating you would select the Company , so it is automatically add to the Company setups 
+				Nav : Common > Companies > View Companies
+				
+		C. Now update the CompanyConfig.js file with the account types you setup like in the A, B steps above 
+					
+			AUTO_PURCHASE_INVOICE_CONFIG: {
+				  invoice_status: "DRAFT",
+				  po_new_status: "INVOICED",
+				  po_order_status_filter: ["APPROVED", "Received"],
+				  payment_terms: "NET 20",
+				  account_types: {
+					Credit: [
+					  {
+						account_type: "Accounts Payable",
+						category: "Normal",
+						distribution_percentage: 50,
+					  },
+					  {
+						account_type: "Accounts Payable Internal",
+						category: "Normal",
+						distribution_percentage: 50,
+					  },
+					],
+					Debit: [
+					  {
+						account_type: "Inventory",
+						category: "Normal",
+						distribution_percentage: 100,
+					  },
+					  {
+						account_type: "Inventory Tax",
+						category: "Tax",
+						tax_type: "VAT",
+						distribution_percentage: 50,
+					  }
+					],
+				  }
+				  
+		D. Check in the PO configuration what are the statues of POs that can be Auto configured 
+			Ensure the PO status can be auto invoiced in this setup : Nav : modules > purchase> config > config.js
+			export const PO_ORDER_STATUS = [
+				  { name: "Draft", short_name: "DRAFT", sequence: 10, toupdated: true },
+				  { name: "Pending Approval", short_name: "PENDING", sequence: 20, toupdated: true },
+				  { name: "Approved", short_name: "APPROVED", sequence: 30, toputaway: true, autoinvoice: true },
+				  { name: "Sent to Vendor", short_name: "SENT", sequence: 40, toinspect: true },
+				  { name: "Partial Receipt", short_name: "PARTIAL", sequence: 50, toputaway: true },
+				  { name: "Received", short_name: "Received", sequence: 60, putaway: true, autoinvoice: true },
+				  { name: "To Inspect", short_name: "TOINSPECT", sequence: 62, putaway: true },
+				  { name: "Inspected", short_name: "INSPECTED", sequence: 65, putaway: true },
+				  { name: "Invoiced", short_name: "INVOICED", sequence: 70, toputaway: true },
+				  { name: "Payment Processing", short_name: "PAYMENT", sequence: 80, putaway: true },
+				  { name: "Paid", short_name: "PAID", sequence: 90, putaway: true },
+				  { name: "Closed", short_name: "CLOSED", sequence: 100 }
+				];
+		D. Now Run Auto create invoice process
+			Nav : Modules > Finance > Purchase > Auto Create Invoice
+				Enter the PO No : 200312641  ( the PO is in Received status )
+				
+			Now the PO invoice for the PO  is created successfully with the below distribution_percentage
+			
+			Invoice Number: 2002
+			Invoice Amount: 96.00 EUR
+			Line No		Is Tax Line		Account					Category		Type						Debit (€)	Credit (€)
+			2001						3001-40002-15012535190	Liability		Accounts Payable			0.00		48.00
+			2002						3001-40002-15012565830	Liability		Accounts Payable Internal	0.00		48.00
+			2003		True			3001-40002-15012502362	Asset			Inventory Tax				5.76		0.00
+			2004						3001-40002-15012539574	Asset			Inventory					90.24		0.00
+
+			You can also check the PO 200638898 status is changed to INVOICED
+			
+Sales Order 
+	
+	Nav : Modules > Sales > Create Sales Order
+		1. Create a Sales Order in Draft status (e.g 200670430) 
+		2. Create Sales Order lines 
+		3. View Sales Order  ( e.g 200670430)
+		4. Open the Sales Order in Modifiy View , add or change quantity in the lines
+		5. Approve the Sales order
+		
+Perform Pick Release
+	Please check the Inventory is present in the storage entities for that item ordered in the sales order
+	Check the Sales order is in Approved status 
+	Nav : Moodules > Inventory > View Inventory 
+	
+	1. Search if the inventory is present in View Inventory or Search Inventory
+		Modules > Inventory > Search Inventory
+	2. Pick Release Inventory 
+		Modules > Inventory > Pick Release Inventory
+		Enter Sales Order No 200670430 and submit
+	If the inventory is availble you will get a message like 
+	Pick release completed with the response: Process completed Sales Order, Lines statuses are updated and available inventory allocated
+	3. Now check the Sales order if the status is changed or not 
+		Modules > Sales > View SOs   ( Status is changed to PICKED)
+		The status in item_inventory table would have been changed to Yes for that Picked inventory , meaning it will not be allocated to any other process further.
+		
+Create Sales Invoice (Manual) & Approve
+	Nav : Modules > Finance > Create New Invoice
+	
+	1. Create a Sales Invoice in Draft Status 
+	2. Create Sales Invoice lines 
+	3. Create Distributions
+	4. View Sales Invoices
+	5. Update the sales invoice (f.ex 1212063) to Approve after making changes if any
+		Nav : Modules > Finance > Modify SI
+		
+Create Journal for the Sales Invoice
+	
+	Nav : Modules > Finance > Auto Create Journal
+	
+	1. Auto create Journal enter the Sales Order number
+		Journal category : sales 
+	2. View Journals and notice it got created in Draft status
+	3. View Sales Invoice staus is changed to Journal Posted 1212063
+	
+Sales Invoice (SO)
+
+	Create a Sales Order 200481203, Approve it 523.00  apply saltax 14% inclusive 
+	
+	The sales invoice distribution is expected to be done like below 
+	
+	Account								Debit (€)	Credit (€)
+	Accounts Receivable (Customer 1)	366.10							70%
+	Accounts Receivable (Customer 2)	156.90							30%
+	Sales Revenue									458.77
+	Sales Tax Payable								64.23
+
+	Setups
+	
+	1. Ensure the following account types are present in the config.js (Nav : modules > finance > config > config.js
+	
+			Accounts Receivable		Asset					
+			Accounts Receivable Internal  Asset
+			Sales			Revenue
+			Sales Tax		Liability
+			
+			Both the account receivables should be posted with 70%, 30% of sales invoice
+	
+	2. Create default Accounts using above account types		 
+		
+		Create the following accounts in  Nav : Module > Finance > Create Accounts
+		
+			Account					Account Type						Account Category		Default Account
+			SALACCREC-16012568625	Accounts Receivable					Asset					Yes
+			SALACCRECIN-16012530633	Accounts Receivable	Internal		Asset					Yes		
+			SALREV-16012557354		Sales								Revenue					Yes
+			SALTAX-16012554877		Sales Tax							Liability				Yes
+			
+			Note : The Account Type must be unique while selecting default accounts as Yes
+			that means you can not create two accounts as defult accounts with the same Account type
+			that is the reason there are two account types created Accounts Receivable, Accounts Receivable	Internal
+			this limitation only for the default accounts creation because they will be linked with default account headers which inturn will be associated to Company
+			
+			Account					Account Type				Account Category		Default Account
+			INVPUR-15012539574 		Inventory					Asset					Yes
+			INVBUY-15012539574 		Inventory					Asset					Yes
+			
+			There should not be two accounts with the same account type with default flag as Yes under the same currency for example as above
+			
+	3. Add the above 4 Default accounts to the Default account header associated to the Department and Company
+			Nav : modules > common > update company
+			Nav : Modules > common > update department
+	4. Now setup the CompanyConfigs.js as below   (Nav : WebClient > src > modules > finance > config > CompanyConfigs.js)
+
+			AUTO_SALES_INVOICE_CONFIG: {
+				  so_order_status_filter: ["PICKED", "PARTPICKED", "APPROVED"],
+				  so_new_status: "INVOICED",
+				  invoice_status: "DRAFT",
+				  account_types: {
+					Debit: [
+					  {
+						account_type: "Accounts Receivable",
+						category: "Normal",
+						distribution_percentage: 70,
+					  },
+					  {
+						account_type: "Accounts Receivable Internal",
+						category: "Normal",
+						distribution_percentage: 30,
+					  },
+					],
+					Credit: [
+					  {
+						account_type: "Sales",
+						category: "Normal",
+						distribution_percentage: 100,
+					  },
+					  {
+						account_type: "Sales Tax",
+						category: "Tax",
+						tax_type: "saltax",							// It should be same tax type that is in the sales order , otherwise tax line will not be created
+						distribution_percentage: 100,
+					  }
+					],
+				  },
+				},	
+				
+			
+		5. Now run the Auto create Invoice proces entere the Approved SO 200481203
+		
+	Now sales invoice successfully created and now check the status of the sales order is changed to INVOICED
+	
+Inventory Operations (UOM Conversion)
+
+		In the inventory ID : 1112 , I have an item ITEM1007 with 20 Each quantity , now I need to convert this to Dozzen
+		
+		First of all ensure Each is an UOM and Dozen is another UOM in UOM setups for Dozen the base unit must be Each 
+		Nav : modules > common > View UOMs
+		UOM ID	Abbreviation	UOM Name	Base Unit	Conversion Factor	Decimal Places	Notes
+			1	Ea				Each		1			1						0				1 Each = 1 * Each
+			2	Dz				Dozen		1			12						0				1 Dozen = 12 * Each
+			3	CA				Carton		1			120						0				1 Carton = 120 * Each
+			4	DP				HDozens		2			100						0				1 HDozens = 100 * Dozen
+			
+		1. Now convert the UOM of the inventory ID 1112 from Each to Dozzen
+			Nav : modules > inventory > UOM conversion
+		2. View the Inventory and observe how the item ITEM1007 how it is splitted
+
+		Item ID	Item Code	Item Name	Quantity	UOM			Transaction Number	Transaction Type		Inventory ID	Bin Name			
+		1000007	ITEM1007	SEATS		8			Each		1002				Receipts				1112			ROW11				
+		1000007	ITEM1007	SEATS		1			Dozen		1002				Receipts				1114			ROW11	
+			
+Inventory Operations (Item Consolidation)
+
+		This will consolidate items into one 1000001 for example 
+
+			1000001	ITEM1001	MRF		9	Each	1001	Receipts	1111	BIN3	RACK1					
+			1000001	ITEM1001	MRF		3	Each	1001	Receipts	1113	BIN3	RACK1	 ALREADY ALLOCATED 						
+			1000001	ITEM1001	MRF		10	Each	31281	Receipts	1115	BIN2						
+			1000001	ITEM1001	MRF		12	Each	22884	Receipts	1116		RACK4					
+			1000001	ITEM1001	MRF		18	Dozen	975		Receipts	1117				AISLE10			
+			1000001	ITEM1001	MRF		14	Dozen	61458	Receipts	1118	BIN1			
+
+		1. Consolidate the Item Inventory for the Item ITEM1001
+			Nav : Modules > Inventory > Item Consolidation
+					Transaction Type : Consolidation
+					Source UOM : Each 
+					Target UOM : Dozen
+					Target aisle : RACK3
+					
+					10, 12, 9 should be consolidated to Target aisle of the item ITEM1001
+					Success: Item Inventory Consolidation or UOM conversion transaction No is 8060190
+		2. View Inventory 
+					
+			1000001	ITEM1001	MRF	3	Each	1001	Receipts		1113	BIN3	RACK1				ALREADY ALLOCATED SO NOT CONSOLIDATED							
+			1000001	ITEM1001	MRF	18	Dozen	975		Receipts		1117				AISLE10			
+			1000001	ITEM1001	MRF	14	Dozen	61458	Receipts		1118	BIN1						
+			1000001	ITEM1001	MRF	2	Dozen	8060190	Consolidation	1125		RACK3					
+			1000001	ITEM1001	MRF	7	Each	8060190	Consolidation	1126		RACK3
+
+			Now you can observe the change there all the Each quantities and consolidated , however 7 quantity is left over can't be consolidated to Dozen
+			
+			Note : if the inventory is already allocated meaning if the status is Yes in the item_inventory table it will not be considered for consolidation because it is allocated for shipping
+			
+	
+Inventory Operations (Item UOM Distribution)
+
+		This process is opposite to consolidation above in which for example the Dozen quantties are splitted into Each and store in the inventory
+		
+		for example if we have situation for an inventory item like below 
+		
+			1000001	ITEM1001	MRF	3	Each	1001	Receipts		1113	BIN3	RACK1				ALREADY ALLOCATED 
+			1000001	ITEM1001	MRF	18	Dozen	975		Receipts		1117				AISLE10			
+			1000001	ITEM1001	MRF	14	Dozen	61458	Receipts		1118	BIN1						
+			1000001	ITEM1001	MRF	2	Dozen	8060190	Consolidation	1125		RACK3					
+			1000001	ITEM1001	MRF	7	Each	8060190	Consolidation	1126		RACK3
+			
+		1. Perform Inventory Distribution 
+			Nav : Modules > Inventory > Item Consolidation 
+				Type : Distribution
+				Item : ITEM1001
+				Source UOM : Dozen
+				Target UOM : Each 
+				Target Location : ZONE10
+				
+			Success: Item Inventory Distribution or UOM conversion transaction No is 4423279
+		2. View the Inventory 
+			Nav : Modules > Inventory > View Inventory 
+			
+		
+			1000001	ITEM1001	MRF		3		Each	1001	Receipts	1113	BIN3	RACK1				ALREADY ALLOCATED SO NOT CONSOLIDATED			
+			1000007	ITEM1007	SEATS	1		Dozen	1002	Receipts	1114			ROW11				
+			1000001	ITEM1001	MRF		7		Each	8060190	Consolidation	1126		RACK3					
+			1000001	ITEM1001	MRF		408		Each	4423279	Distribution	1127		ZON10LOC10	
+			
+			There are 18, 14, 2 Dozens , they are distributed as Each into ZONE location as 408
+			
+Inventory Operations ( Move Inventory)
+
+		I can move the material from One Inventory storage to another storage location  
+		You can only move the inventory ids where the status flag is not equal to Yes  ( if it is Yes it is already allocated for shipping)
+		
+		1. Move Inventory 
+			Nav : Modules > Inventory > Move Inventory
+				Item : ITEM1001
+				Transaction Type : Receipts
+				Inventory ID : 1111
+				Inventory Quantity : 3
+				Source Storage location : RACK1
+				Move Quantity : 2
+				Target Storage : RACK 10
+				
+				Success : Inventory moved successfully
+
+			The Inventory is split from 3, and 2 quantity will be moved to RACK10 and 1 will remain in RACK1
+		2. View Inventory 
+			Nav : Modules > Inventory > View Inventory
+
+Inventory Operations ( Create Storage locations)
+
+		In order to receive or ship or store materials there needs storage 
+		The following storage locations can be created 
+		
+		Nav : Modules > Inventory > Storage
+		Create Warehouses
+		Create Locations
+		Create Zones
+		Create Aisles
+		Create Rows
+		Create Racks
+		Create Bins
+		
+		and You can View the Bins 
+		
+
+	
+
+		
+			
+				
+		
+	
+
+	
+		
+		
+		
+		
+		
+		
+
+
+		
+	
+		

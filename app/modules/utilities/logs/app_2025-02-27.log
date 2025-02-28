@@ -1,0 +1,16 @@
+2025-02-27 18:25:45 - INFO - Debug: Conversion API Blueprint registered
+2025-02-27 18:25:46 - INFO - Debug: Conversion API Blueprint registered
+2025-02-27 18:26:18 - DEBUG -  --> modules.security.routes.security_routes: Entered in the login_user route
+2025-02-27 18:26:19 - DEBUG -  --> modules.security.routes.security_routes: Entered in the list_modules_data route
+2025-02-27 18:26:19 - DEBUG - modules.security.get_user_from_token and 0: Successfully retrieved data from token from get user token
+2025-02-27 18:26:19 - DEBUG - Token extracted for authorization: {'fresh': False, 'iat': 1740673579, 'jti': '427fab40-0087-4f1b-a46b-b519a4f04151', 'type': 'access', 'sub': 'kishore', 'nbf': 1740673579, 'csrf': '0ff0d0a4-53be-4136-9916-0eb249c4990f', 'exp': 1740677179, 'Userid': 0, 'empid': 0, 'username': 'kishore', 'name': 'SUPER USER0', 'expires_in': 3600, 'password': '$2b$12$OjcDyH3BflTBHiiiQ1pVtOwWnxFju6j7EUBG8GWZKeKICVghjeI96', 'appuserstatus': 'Active', 'instance': 'instance0', 'company': 'Company_5', 'emailid': None}
+2025-02-27 18:26:19 - DEBUG - kishore --> modules.security.routines.get_user_and_db_details: Extracted user details from token: appuser=kishore, instance=instance0, company=Company_5
+2025-02-27 18:26:19 - ERROR - kishore --> modules.security.routines.read_instance_cnf: Error reading instance configuration: name 'instance_folder' is not defined
+2025-02-27 18:26:19 - ERROR - kishore --> modules.security.routines.get_user_and_db_details: Error retrieving system details: Error reading instance configuration: name 'instance_folder' is not defined
+2025-02-27 18:29:15 - DEBUG -  --> modules.security.routes.security_routes: Entered in the login_user route
+2025-02-27 18:29:15 - DEBUG -  --> modules.security.routes.security_routes: Entered in the list_modules_data route
+2025-02-27 18:29:15 - DEBUG - modules.security.get_user_from_token and 0: Successfully retrieved data from token from get user token
+2025-02-27 18:29:15 - DEBUG - Token extracted for authorization: {'fresh': False, 'iat': 1740673755, 'jti': '743fefe2-39f3-4afe-8eec-6f07f0f2529e', 'type': 'access', 'sub': 'kishore', 'nbf': 1740673755, 'csrf': 'a47f1a78-d6c5-49d3-aacc-ef9a814cdb0d', 'exp': 1740677355, 'Userid': 0, 'empid': 0, 'username': 'kishore', 'name': 'SUPER USER0', 'expires_in': 3600, 'password': '$2b$12$OjcDyH3BflTBHiiiQ1pVtOwWnxFju6j7EUBG8GWZKeKICVghjeI96', 'appuserstatus': 'Active', 'instance': 'instance0', 'company': 'Company_5', 'emailid': None}
+2025-02-27 18:29:15 - DEBUG - kishore --> modules.security.routines.get_user_and_db_details: Extracted user details from token: appuser=kishore, instance=instance0, company=Company_5
+2025-02-27 18:29:15 - ERROR - kishore --> modules.security.routines.read_instance_cnf: Error reading instance configuration: name 'instance_folder' is not defined
+2025-02-27 18:29:15 - ERROR - kishore --> modules.security.routines.get_user_and_db_details: Error retrieving system details: Error reading instance configuration: name 'instance_folder' is not defined
