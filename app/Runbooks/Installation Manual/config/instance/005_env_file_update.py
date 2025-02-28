@@ -27,7 +27,7 @@ def update_env_file():
     CONFIG_INI_DIR_NAME = 'config.ini'
 
     # 7. In the APPL_DIR, there is a subdirectory called WebClient
-    WB_ROOT_DIR = os.path.join(APPL_DIR, 'WebClient')
+    WB_ROOT_DIR = os.path.join(APPL_DIR, 'webclient')
     WB_ROOT_DIR_NAME = 'WebClient'
     
         # 7. In the APPL_DIR, there is a subdirectory called WebClient

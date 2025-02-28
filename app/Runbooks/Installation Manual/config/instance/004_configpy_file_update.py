@@ -32,7 +32,7 @@ print(f"Config.ini File Path: {CONFIG_INI_DIR}")
 print(f"Config.ini File Name: {CONFIG_INI_DIR_NAME}")
 
 # Step 6: Find the 'AppService' subdirectory in the APPL_DIR and store its path in APP_ROOT_DIR
-APP_ROOT_DIR = os.path.join(APPL_DIR, 'AppService')
+APP_ROOT_DIR = os.path.join(APPL_DIR, 'appservice')
 APP_ROOT_DIR_NAME = os.path.basename(APP_ROOT_DIR)
 print(f"AppService Directory: {APP_ROOT_DIR}")
 print(f"AppService Directory Name: {APP_ROOT_DIR_NAME}")
