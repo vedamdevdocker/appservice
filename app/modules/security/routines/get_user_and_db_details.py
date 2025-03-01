@@ -21,8 +21,7 @@ def get_user_and_db_details(authorization_header):
         token_results = get_user_from_token(authorization_header)
         logger.debug(f"Token extracted for authorization: {token_results}")
     else:
-        appuser = appuser if appuser is not None else 'initial'
-        logger.error(f"{appuser} --> {__name__}: Authorization header missing or invalid")
+        logger.error(f"Authorization header missing or invalid")
         return None, None, None, None, None, None, "Authorization header missing or invalid"
 
     # Extract user details from the token results
