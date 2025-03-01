@@ -69,6 +69,21 @@ if [ -d "$home_dir" ]; then
     sudo chmod -R 777 "$home_dir/config" "$home_dir/start"
     sudo chmod 777 "$home_dir/config.ini"
     echo "Permissions applied successfully."
+
+    # Run run_python3.sh from the 'instance' directory
+    if [ -d "$home_dir/config/instance" ]; then
+        echo "Found 'instance' directory. Switching to it and running run_python3.sh..."
+        cd "$home_dir/config/instance" || exit
+        sudo ./run_python3.sh
+    else
+        echo "Error: 'instance' directory not found in '$home_dir/config'."
+    fi
+
+    # Run run_python2.sh from the 'config' directory
+    echo "Switching to config directory and running run_python2.sh..."
+    cd "$home_dir/config" || exit
+    sudo ./run_python2.sh
+
 else
     echo "Error: Home directory '$home_dir' was not found."
 fi
