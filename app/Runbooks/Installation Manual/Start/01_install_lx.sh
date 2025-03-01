@@ -1,4 +1,4 @@
-#!/bin/bash
+c#!/bin/bash
 
 # Update the system and install dependencies
 echo "Updating package list and installing dependencies..."
@@ -81,7 +81,7 @@ if [ -d "$home_dir" ]; then
 
     # Run run_python2.sh from the 'config' directory
     echo "Switching to config directory and running run_python2.sh..."
-    cd "$home_dir/config" || exit
+	cd .. || exit  # Moves up to the config directory
     sudo ./run_python2.sh
 
 else
