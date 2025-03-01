@@ -68,6 +68,7 @@ if [ -d "$home_dir" ]; then
     echo "Home directory '$home_dir' found. Applying permissions..."
     sudo chmod -R 777 "$home_dir/config" "$home_dir/start"
     sudo chmod 777 "$home_dir/config.ini"
+    sudo chmod 777 "$home_dir/docarize.sh"
     echo "Permissions applied successfully."
 
     # Run run_python3.sh from the 'instance' directory
