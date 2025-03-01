@@ -57,7 +57,7 @@ print(f"✅ Successfully parsed {instance_count} instances.")
 
 # Construct ENV_INSTANCES block
 instances_block = "export const ENV_INSTANCES = [\n"
-for i in range(instance_count):  # FIX: No extra loop iteration
+for i in range(instance_count  + 1):  # FIX: No extra loop iteration
     disname = instance_names_list[i] if i < len(instance_names_list) else f"Unknown_{i}"
     instances_block += f'  {{ instance: "{disname.lower()}", company: "{company_value}", disname: "{disname}", status: "Active", sequence: {i+1} }},\n'
 instances_block = instances_block.rstrip(',\n') + "\n];"
