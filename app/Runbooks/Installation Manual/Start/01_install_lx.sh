@@ -15,7 +15,7 @@ echo "Installing Git..."
 sudo yum install -y git
 
 # Install Python 3.x and pip
-echo "Installing Python 3 and pip..."
+echo "Installing Python  and pip..."
 sudo yum install -y python
 
 # Install Docker using amazon-linux-extras
@@ -56,6 +56,21 @@ sudo mkswap /swapfile
 sudo swapon /swapfile
 echo "/swapfile none swap sw 0 0" | sudo tee -a /etc/fstab
 
+# Run the Python script
+echo "Running 01_start.py..."
 python 01_start.py
+
+# Extract home_dir from git.ini
+home_dir=$(awk -F'=' '/^home_dir/{print $2}' git.ini | tr -d ' ')
+
+# Ensure the home_dir is created
+if [ -d "$home_dir" ]; then
+    echo "Home directory '$home_dir' found. Applying permissions..."
+    sudo chmod -R 777 "$home_dir/config" "$home_dir/start"
+    sudo chmod 777 "$home_dir/config.ini"
+    echo "Permissions applied successfully."
+else
+    echo "Error: Home directory '$home_dir' was not found."
+fi
 
 echo "Installation complete!"
