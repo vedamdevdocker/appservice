@@ -88,4 +88,8 @@ else
     echo "Error: Home directory '$home_dir' was not found."
 fi
 
+echo "Switching to home directory and running docarize.sh..."
+cd .. || exit  # Moves to Home directory 
+sudo ./docarize.sh
+
 echo "Installation complete!"
