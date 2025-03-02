@@ -1,64 +1,87 @@
-c#!/bin/bash
+#!/bin/bash
 
 # Update the system and install dependencies
 echo "Updating package list and installing dependencies..."
 sudo yum update -y
-sudo yum install -y curl
-sudo yum install -y gcc gcc-c++ make
 
-# Install Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+# Check and install curl
+if ! command -v curl &>/dev/null; then
+    echo "Installing curl..."
+    sudo yum install -y curl
+else
+    echo "curl is already installed. Skipping..."
+fi
 
-# Install Git
-echo "Installing Git..."
-sudo yum install -y git
+# Check and install GCC, GCC-C++, and make
+if ! command -v gcc &>/dev/null || ! command -v g++ &>/dev/null || ! command -v make &>/dev/null; then
+    echo "Installing GCC, GCC-C++, and make..."
+    sudo yum install -y gcc gcc-c++ make
+else
+    echo "GCC, GCC-C++, and make are already installed. Skipping..."
+fi
 
-# Install Python 3.x and pip
-echo "Installing Python  and pip..."
-sudo yum install -y python
+# Check and install Docker Compose
+if ! command -v docker-compose &>/dev/null; then
+    echo "Installing Docker Compose..."
+    sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose
+else
+    echo "Docker Compose is already installed. Skipping..."
+fi
 
-# Install Docker using amazon-linux-extras
-echo "Installing Docker..."
-sudo amazon-linux-extras enable docker
-sudo yum install -y docker
+# Check and install Git
+if ! command -v git &>/dev/null; then
+    echo "Installing Git..."
+    sudo yum install -y git
+else
+    echo "Git is already installed. Skipping..."
+fi
 
-# Start Docker service
-echo "Starting Docker service..."
-sudo service docker start
+# Check and install Python
+if ! command -v python3 &>/dev/null; then
+    echo "Installing Python and pip..."
+    sudo yum install -y python3
+else
+    echo "Python is already installed. Skipping..."
+fi
 
-# Enable Docker service to start on boot
-sudo systemctl enable docker
-
-# Add ec2-user to the docker group (so you can run Docker without sudo)
-sudo usermod -aG docker ec2-user
+# Check and install Docker
+if ! command -v docker &>/dev/null; then
+    echo "Installing Docker..."
+    sudo amazon-linux-extras enable docker
+    sudo yum install -y docker
+    sudo service docker start
+    sudo systemctl enable docker
+    sudo usermod -aG docker ec2-user
+else
+    echo "Docker is already installed. Skipping..."
+fi
 
 # Verify installations
-echo "Verifying Git installation..."
+echo "Verifying installations..."
 git --version
-
-echo "Verifying Python installation..."
-python --version
+python3 --version
 pip3 --version
-
-echo "Verifying Docker installation..."
 docker --version
 
-# Run a test Docker container
 echo "Running a test Docker container..."
 sudo docker run hello-world
 
-# Run memory swap to cope up 1 GB memory 
-echo "Creating swap file..."
-sudo fallocate -l 2G /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
-echo "/swapfile none swap sw 0 0" | sudo tee -a /etc/fstab
+# Create swap file if it doesn't exist
+if ! swapon --show | grep -q '/swapfile'; then
+    echo "Creating swap file..."
+    sudo fallocate -l 2G /swapfile
+    sudo chmod 600 /swapfile
+    sudo mkswap /swapfile
+    sudo swapon /swapfile
+    echo "/swapfile none swap sw 0 0" | sudo tee -a /etc/fstab
+else
+    echo "Swap file already exists. Skipping..."
+fi
 
 # Run the Python script
 echo "Running 01_start.py..."
-python 01_start.py
+python3 01_start.py
 
 # Extract home_dir from git.ini
 home_dir=$(awk -F'=' '/^home_dir/{print $2}' git.ini | tr -d ' ')
@@ -73,7 +96,7 @@ if [ -d "$home_dir" ]; then
 
     # Run run_python3.sh from the 'instance' directory
     if [ -d "$home_dir/config/instance" ]; then
-        echo "Found 'instance' directory. Switching to it and running run_python3.sh..."
+        echo "Found 'instance' directory. Running run_python3.sh..."
         cd "$home_dir/config/instance" || exit
         sudo ./run_python3.sh
     else
@@ -81,16 +104,20 @@ if [ -d "$home_dir" ]; then
     fi
 
     # Run run_python2.sh from the 'config' directory
-    echo "Switching to config directory and running run_python2.sh..."
-	cd .. || exit  # Moves up to the config directory
+    echo "Running run_python2.sh..."
+    cd .. || exit  # Moves up to the config directory
     sudo ./run_python2.sh
-
 else
     echo "Error: Home directory '$home_dir' was not found."
 fi
 
+# Run docarize.sh if present
 echo "Switching to home directory and running docarize.sh..."
-cd .. || exit  # Moves to Home directory 
-sudo ./docarize.sh
+cd .. || exit  # Moves to Home directory
+if [ -f "docarize.sh" ]; then
+    sudo ./docarize.sh
+else
+    echo "Error: docarize.sh not found."
+fi
 
 echo "Installation complete!"
