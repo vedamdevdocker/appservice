@@ -25,6 +25,19 @@ IF NOT EXIST "%GIT_INI%" (
     EXIT /B 1
 )
 
+:: Check if update_configini_file.py exists in the same directory as this batch file
+IF EXIST "%CURR_DIR%\update_configini_file.py" (
+    echo Running update_configini_file.py...
+    python "%CURR_DIR%\update_configini_file.py"
+    IF %ERRORLEVEL% NEQ 0 (
+        echo Error: update_configini_file.py execution failed.
+        EXIT /B 1
+    )
+)
+
+:: Switch to current directory
+SET "CURR_DIR=%CD%"
+
 FOR /F "tokens=1,2 delims==" %%A IN ('findstr "home_dir" "%GIT_INI%"') DO (
     IF "%%A" == "home_dir" SET "HOME_DIR=%%B"
 )
@@ -49,13 +62,17 @@ IF %ERRORLEVEL% NEQ 0 (
     EXIT /B 1
 )
 
+echo Current Directory: %CD%
 :: Switch to home directory
 CD /D "%CURR_DIR%\%HOME_DIR%"
 
+
+echo After switching what Current Directory: %CD%
+
 :: Check if docker-compose.yml exists
 IF EXIST "docker-compose.yml" (
-    IF EXIST "dockerize.bat" (
-        call dockerize.bat
+    IF EXIST "docarize.bat" (
+        call docarize.bat
     ) ELSE (
         echo Warning: dockerize.bat not found.
     )

@@ -83,6 +83,13 @@ fi
 echo "Running 01_start.py..."
 python3 01_start.py
 
+echo "Waiting for 2 seconds..."
+sleep 2
+echo "Resuming script execution."
+
+echo "Running update_configini_file.py..."
+python3 update_configini_file.py
+
 # Extract home_dir from git.ini
 home_dir=$(awk -F'=' '/^home_dir/{print $2}' git.ini | tr -d ' ')
 
