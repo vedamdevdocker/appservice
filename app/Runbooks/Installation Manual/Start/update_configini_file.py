@@ -1,5 +1,6 @@
 import os
 import configparser
+import shutil
 
 # Custom configparser that preserves case and formatting
 class CaseInsensitiveConfigParser(configparser.ConfigParser):
@@ -8,6 +9,7 @@ class CaseInsensitiveConfigParser(configparser.ConfigParser):
 
 # Define file paths
 GIT_INI_PATH = os.path.join(os.getcwd(), "git.ini")
+print(f"Checking for git.ini at: {GIT_INI_PATH}")
 
 # Check if git.ini exists
 if not os.path.exists(GIT_INI_PATH):
@@ -17,6 +19,7 @@ if not os.path.exists(GIT_INI_PATH):
 # Read git.ini
 git_config = CaseInsensitiveConfigParser()
 git_config.read(GIT_INI_PATH)
+print("git.ini loaded successfully.")
 
 # Extract home_dir
 if "gitdetails" not in git_config or "home_dir" not in git_config["gitdetails"]:
@@ -24,24 +27,26 @@ if "gitdetails" not in git_config or "home_dir" not in git_config["gitdetails"]:
     exit(1)
 
 HOME_DIR = os.path.join(os.getcwd(), git_config["gitdetails"]["home_dir"])
+print(f"Resolved HOME_DIR: {HOME_DIR}")
 
 # Define config.ini path
-CONFIG_INI_PATH = os.path.join(HOME_DIR, "config.ini")
+CONFIG_INI_PATH = os.path.join(os.getcwd(), "config.ini")
+print(f"Checking for config.ini at: {CONFIG_INI_PATH}")
 
 # Check if config.ini exists
 if not os.path.exists(CONFIG_INI_PATH):
-    print(f"Error: config.ini not found in {HOME_DIR}")
+    print(f"Error: config.ini not found in {os.getcwd()}")
     exit(1)
 
 # Read config.ini
 config_ini = CaseInsensitiveConfigParser()
 config_ini.read(CONFIG_INI_PATH)
+print("config.ini loaded successfully.")
 
 # Mappings from git.ini to config.ini
 mappings = {
     "gitdetails": {
-        "home_dir": ["Global", "company_folder"],
-        "home_dir": ["Global", "CONTAINER_PREFIX"],
+        "home_dir": [["Global", "company_folder"], ["Global", "CONTAINER_PREFIX"]],
         "git_user": ["gitcreds", "git_user"],
         "git_password": ["gitcreds", "git_password"],
         "git_clone_type": ["gitcreds", "git_clone_type"],
@@ -73,21 +78,30 @@ mappings = {
 # Update values in config.ini
 for section, keys in mappings.items():
     if section in git_config:
-        for git_key, (config_section, config_key) in keys.items():
+        for git_key, config_entries in keys.items():
             if git_key in git_config[section]:
-                if config_section in config_ini:
-                    config_ini.set(config_section, config_key, git_config[section][git_key])
-                else:
-                    print(f"Warning: Section [{config_section}] not found in config.ini, skipping {config_key}...")
+                # Ensure config_entries is treated as a list of lists
+                if not isinstance(config_entries[0], list):
+                    config_entries = [config_entries]
+
+                for config_section, config_key in config_entries:
+                    if config_section in config_ini:
+                        print(f"Updating [{config_section}] {config_key} with value from [{section}] {git_key}")
+                        config_ini.set(config_section, config_key, git_config[section][git_key])
+                    else:
+                        print(f"Warning: Section [{config_section}] not found in config.ini, skipping {config_key}...")
 
 # Update CERTIFICATES section
 if "CERTIFICATES" in git_config:
     if "CERTIFICATES" not in config_ini:
+        print("Adding CERTIFICATES section to config.ini")
         config_ini.add_section("CERTIFICATES")
     for key, value in git_config["CERTIFICATES"].items():
+        print(f"Updating [CERTIFICATES] {key} with value from git.ini")
         config_ini.set("CERTIFICATES", key, value)
 
 # Save updated config.ini
+print("Writing updated values to config.ini...")
 with open(CONFIG_INI_PATH, "w") as configfile:
     for section in config_ini.sections():
         configfile.write(f"[{section}]\n")
