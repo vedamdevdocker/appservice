@@ -35,7 +35,7 @@ with open(INPUT_JSON_FILE, "r", encoding="utf-8") as json_file:
     data = json.load(json_file)
 
 # Extract values from JSON
-company_name = data["company_name"]
+company_short_name = data["company_short_name"]
 company_display_name = data["company_display_name"]
 communication_email = data["communication_email"]
 sms = data["sms"]
@@ -56,7 +56,7 @@ config = CustomConfigParser()
 config.read(GIT_INI_FILE, encoding="utf-8")
 
 # Update values
-config["gitdetails"]["home_dir"] = company_name
+config["gitdetails"]["home_dir"] = company_short_name
 config["communication"]["email_id"] = communication_email
 config["communication"]["sms_id"] = sms
 config["other"]["instances"] = str(needed_instances - 1)
@@ -71,6 +71,8 @@ config["other"]["WEB_CLIENT_PORT"] = web_client_port
 config["other"]["WEB_CLIENT_DOCKER_PORT"] = web_client_port
 config["other"]["SMTP_HOST"] = system_ip
 config["other"]["SMTP_PORT"] = smtp_port
+config["other"]["company_folder"] = company_short_name
+config["other"]["CONTAINER_PREFIX"] = company_short_name
 
 # Write updated config back to file
 with open(GIT_INI_FILE, "w", encoding="utf-8") as configfile:

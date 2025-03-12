@@ -8,13 +8,6 @@ IF %ERRORLEVEL% NEQ 0 (
     EXIT /B 1
 )
 
-:: Run the Python script
-python 01_start.py
-IF %ERRORLEVEL% NEQ 0 (
-    echo Error: Python script execution failed.
-    EXIT /B 1
-)
-
 :: Switch to current directory
 SET "CURR_DIR=%CD%"
 
@@ -25,6 +18,16 @@ IF NOT EXIST "%GIT_INI%" (
     EXIT /B 1
 )
 
+:: Update git.ini file with client input and free ports
+IF EXIST "%CURR_DIR%\gitini_ports_update.py" (
+    echo Running gitini_ports_update.py...
+    python "%CURR_DIR%\gitini_ports_update.py"
+    IF %ERRORLEVEL% NEQ 0 (
+        echo Error: gitini_ports_update.py execution failed.
+        EXIT /B 1
+    )
+)
+
 :: Check if update_configini_file.py exists in the same directory as this batch file
 IF EXIST "%CURR_DIR%\update_configini_file.py" (
     echo Running update_configini_file.py...
@@ -33,6 +36,13 @@ IF EXIST "%CURR_DIR%\update_configini_file.py" (
         echo Error: update_configini_file.py execution failed.
         EXIT /B 1
     )
+)
+
+:: Run the Python script
+python 01_start.py
+IF %ERRORLEVEL% NEQ 0 (
+    echo Error: Python script execution failed.
+    EXIT /B 1
 )
 
 :: Switch to current directory
