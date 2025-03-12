@@ -1,0 +1,13 @@
+{
+  "company_name": "Company_9",
+  "company_display_name": "Trading Operations", 
+  "communication_email": "test@test.com",
+  "sms": "00358499234457",
+  "env": "Development",
+  "needed_instances": 3,
+  "instance_details": [
+    {"name": "ABC", "seedata": "Yes"},
+    {"name": "BCD", "seedata": "yes"},
+    {"name": "ECF", "seedata": "No"}
+  ]
+}
