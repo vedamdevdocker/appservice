@@ -176,7 +176,16 @@ cd "$CURR_DIR" || exit
 echo "Checking for 'docker' Python module..."
 if ! python3 -c "import docker" 2>/dev/null; then
     echo "'docker' module not found. Installing..."
+    
+    # Upgrade pip to the latest version
+    pip3 install --upgrade pip
+    
+    # Install the latest version of urllib3
+    pip3 install --upgrade urllib3
+    
+    # Now install the docker module
     pip3 install docker
+    
     if [ $? -ne 0 ]; then
         echo "Error: Failed to install 'docker' module."
         exit 1
@@ -184,6 +193,7 @@ if ! python3 -c "import docker" 2>/dev/null; then
 else
     echo "'docker' module is already installed."
 fi
+
 
 # Run get_results.py to generate environment details
 echo "Running get_results.py..."
