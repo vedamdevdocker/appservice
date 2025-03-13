@@ -111,7 +111,6 @@ if [ -f "$CURR_DIR/update_configini_file.py" ]; then
     fi
 fi
 
-read -p "Press Enter to continue..."
 
 # Run 01_start.py
 echo "Running 01_start.py..."

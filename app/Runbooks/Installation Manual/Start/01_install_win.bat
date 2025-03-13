@@ -38,8 +38,6 @@ IF EXIST "%CURR_DIR%\update_configini_file.py" (
     )
 )
 
-pause
-
 :: Run the Python script
 python 01_start.py
 IF %ERRORLEVEL% NEQ 0 (
