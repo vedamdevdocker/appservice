@@ -43,7 +43,7 @@ Step 2: Repository Cloning and Configuration
 		Read configurations from the git.ini file.
 		Clone the required repositories (AppService and WebClient).
 		Set up the required directory structure.
-		Copy installation manuals and relevant configuration files.
+		Copy installation scripts and relevant configuration files.
 		Ensure that the git.ini file is properly configured before running the script.
 
 Step 3: Permissions and Execution

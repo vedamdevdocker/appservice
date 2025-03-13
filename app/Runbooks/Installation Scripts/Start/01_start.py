@@ -48,15 +48,15 @@ def clone_repository(repo_url, target_dir):
     print(f"Cloning {repo_url} into {target_dir}...")
     subprocess.run(["git", "clone", repo_url, target_dir], check=True)
 
-def copy_installation_manual(appservice_dir, target_dir):
-    """Copy files from 'Installation Manual' to target directory."""
-    installation_manual_dir = os.path.join(appservice_dir, "app", "Runbooks", "Installation Manual")
-    if not os.path.exists(installation_manual_dir):
-        print("Error: Installation Manual directory not found.")
+def copy_installation_scripts(appservice_dir, target_dir):
+    """Copy files from 'Installation Scripts' to target directory."""
+    installation_scripts_dir = os.path.join(appservice_dir, "app", "Runbooks", "Installation Scripts")
+    if not os.path.exists(installation_scripts_dir):
+        print("Error: Installation Scripts directory not found.")
         sys.exit(1)
     
-    for item in os.listdir(installation_manual_dir):
-        s = os.path.join(installation_manual_dir, item)
+    for item in os.listdir(installation_scripts_dir):
+        s = os.path.join(installation_scripts_dir, item)
         d = os.path.join(target_dir, item)
         if os.path.isdir(s):
             shutil.copytree(s, d, dirs_exist_ok=True)
@@ -79,7 +79,7 @@ def main():
     print("Waiting for cloning to complete...")
     time.sleep(5)
     
-    copy_installation_manual(appservice_dir, base_dir)
+    copy_installation_scripts(appservice_dir, base_dir)
     print("Setup completed successfully.")
 
 if __name__ == "__main__":
