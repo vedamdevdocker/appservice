@@ -11,6 +11,25 @@ IF %ERRORLEVEL% NEQ 0 (
 :: Switch to current directory
 SET "CURR_DIR=%CD%"
 
+pip --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Error: pip is not installed.
+    exit /b 1
+)
+
+:: Check if the 'docker' Python module is installed
+python -c "import docker" 2>nul
+if %errorlevel% neq 0 (
+    echo Docker module not found. Installing...
+    pip install docker
+    if %errorlevel% neq 0 (
+        echo Error: Failed to install the docker module.
+        exit /b 1
+    )
+) else (
+    echo Docker module is already installed.
+)
+
 :: Read git.ini file
 SET "GIT_INI=%CURR_DIR%\git.ini"
 IF NOT EXIST "%GIT_INI%" (

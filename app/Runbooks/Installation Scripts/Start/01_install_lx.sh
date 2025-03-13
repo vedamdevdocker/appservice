@@ -174,9 +174,25 @@ else
     echo "Warning: docarize.sh not found."
 fi
 
+
+cd "$CURR_DIR" || exit
+
+# Check if 'docker' module is installed, install if missing
+echo "Checking for 'docker' Python module..."
+if ! python3 -c "import docker" 2>/dev/null; then
+    echo "'docker' module not found. Installing..."
+    pip install docker
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to install 'docker' module."
+        exit 1
+    fi
+else
+    echo "'docker' module is already installed."
+fi
+
 # Run get_results.py to generate environment details
 echo "Running get_results.py..."
-cd "$CURR_DIR" || exit
+
 if [ -f "get_results.py" ]; then
     python3 "get_results.py"
     if [ $? -ne 0 ]; then
