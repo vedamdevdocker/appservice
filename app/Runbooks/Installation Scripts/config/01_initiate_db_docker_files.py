@@ -96,6 +96,27 @@ COPY db_config.ini /etc/mysql/configs/
 EXPOSE 3306
 """.strip())
 
+def create_dockerfile_with_seed_data(instance_path):
+    dockerfile_path = os.path.join(instance_path, "Dockerfile")
+    with open(dockerfile_path, "w") as f:
+        f.write("""
+# Use official MySQL image as base
+FROM mysql:8
+
+# Copy all SQL scripts and subfolders from 'scripts/create' to MySQL initialization directory
+COPY scripts/create /docker-entrypoint-initdb.d/
+COPY create_user.sql /docker-entrypoint-initdb.d/
+
+# Copy the seed data dump to MySQL initialization directory
+COPY scripts/seed_data/seed_data_dump.sql /docker-entrypoint-initdb.d/
+
+# Copy db_config.ini to /etc/mysql/configs/
+COPY db_config.ini /etc/mysql/configs/
+
+# Expose MySQL port
+EXPOSE 3306
+""".strip())
+
 def main():
     # Get the directory of the script
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -116,18 +137,27 @@ def main():
     config = read_config(config_path)
     instance_names, ports = validate_config(config)  # Get instances and ports list
     
-    if len(instance_names) != len(ports):
-        raise ValueError("Mismatch between instance names and ports list.")
+    # Read SEED_DATA values
+    seed_data_values = config.get("instances", "SEED_DATA", fallback="").split(",")
+    
+    if len(instance_names) != len(ports) or len(instance_names) != len(seed_data_values):
+        raise ValueError("Mismatch between instance names, ports, and SEED_DATA lists.")
     
     create_instance_directories(db_instances_path, instance_names)
-    for instance, port in zip(instance_names, ports):
+    for instance, port, seed_data in zip(instance_names, ports, seed_data_values):
         instance_cleaned = instance.strip()  # Remove leading and trailing spaces
-  
+        seed_data_cleaned = seed_data.strip().lower()  # Convert to lowercase for comparison
+
         instance_path = os.path.join(db_instances_path, instance_cleaned.lower())  # Convert to lowercase
         create_db_config(instance_path, instance_cleaned.lower(), port, config)  
         create_sql_script(instance_path, instance_cleaned.lower(), config)
         copy_schema_scripts(schema_path, instance_path)
-        create_dockerfile(instance_path)
+
+        # Check SEED_DATA value and call the appropriate function
+        if seed_data_cleaned == "yes":
+            create_dockerfile_with_seed_data(instance_path)
+        else:
+            create_dockerfile(instance_path)
 
 if __name__ == "__main__":
     main()
