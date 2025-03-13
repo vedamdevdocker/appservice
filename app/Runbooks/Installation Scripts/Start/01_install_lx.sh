@@ -174,4 +174,17 @@ else
     echo "Warning: docarize.sh not found."
 fi
 
+# Run get_results.py to generate environment details
+echo "Running get_results.py..."
+cd "$CURR_DIR" || exit
+if [ -f "get_results.py" ]; then
+    python3 "get_results.py"
+    if [ $? -ne 0 ]; then
+        echo "Error: get_results.py execution failed."
+        exit 1
+    fi
+else
+    echo "Warning: get_results.py not found."
+fi
+
 echo "Script execution completed!"

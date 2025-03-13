@@ -101,4 +101,19 @@ IF EXIST "docker-compose.yml" (
     echo Warning: docker-compose.yml not found.
 )
 
+:: Switch back to CURR_DIR
+CD /D "%CURR_DIR%"
+
+:: Check if get_results.py exists and run it
+IF EXIST "%CURR_DIR%\get_results.py" (
+    echo Running get_results.py...
+    python "%CURR_DIR%\get_results.py"
+    IF %ERRORLEVEL% NEQ 0 (
+        echo Error: get_results.py execution failed.
+        EXIT /B 1
+    )
+) ELSE (
+    echo Warning: get_results.py not found.
+)
+
 ENDLOCAL
