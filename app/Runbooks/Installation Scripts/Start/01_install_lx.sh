@@ -39,20 +39,24 @@ else
     echo "Git is already installed. Skipping..."
 fi
 
-# Check and install Python
+# Check and install Python3 and pip3
 if ! command -v python3 &>/dev/null; then
-    echo "Installing Python and pip..."
+    echo "Installing Python3 and pip3..."
     sudo yum install -y python3 python3-pip
-
-    # Create a symlink for python
     sudo alternatives --install /usr/bin/python python /usr/bin/python3 1
 else
-    echo "Python is already installed. Skipping..."
+    echo "Python3 is already installed. Skipping..."
 fi
 
-# Ensure pip is available
+# Ensure pip3 is correctly linked
+if ! command -v pip3 &>/dev/null; then
+    echo "pip3 is missing, installing..."
+    sudo yum install -y python3-pip
+fi
+
+# Ensure `pip` command exists
 if ! command -v pip &>/dev/null; then
-    echo "Ensuring pip is available..."
+    echo "Creating symlink for pip..."
     sudo ln -s /usr/bin/pip3 /usr/bin/pip
 fi
 
@@ -71,8 +75,8 @@ fi
 # Verify installations
 echo "Verifying installations..."
 git --version
-python --version
-pip --version
+python3 --version
+pip3 --version
 docker --version
 
 echo "Running a test Docker container..."
@@ -100,33 +104,17 @@ if [ ! -f "$GIT_INI" ]; then
     exit 1
 fi
 
-# Update git.ini file with client input and free ports
-if [ -f "$CURR_DIR/gitini_ports_update.py" ]; then
-    echo "Running gitini_ports_update.py..."
-    python "$CURR_DIR/gitini_ports_update.py"
-    if [ $? -ne 0 ]; then
-        echo "Error: gitini_ports_update.py execution failed."
-        exit 1
+# Run Python scripts
+for script in gitini_ports_update.py update_configini_file.py 01_start.py; do
+    if [ -f "$CURR_DIR/$script" ]; then
+        echo "Running $script..."
+        python3 "$CURR_DIR/$script"
+        if [ $? -ne 0 ]; then
+            echo "Error: $script execution failed."
+            exit 1
+        fi
     fi
-fi
-
-# Run update_configini_file.py
-if [ -f "$CURR_DIR/update_configini_file.py" ]; then
-    echo "Running update_configini_file.py..."
-    python "$CURR_DIR/update_configini_file.py"
-    if [ $? -ne 0 ]; then
-        echo "Error: update_configini_file.py execution failed."
-        exit 1
-    fi
-fi
-
-# Run 01_start.py
-echo "Running 01_start.py..."
-python "$CURR_DIR/01_start.py"
-if [ $? -ne 0 ]; then
-    echo "Error: 01_start.py execution failed."
-    exit 1
-fi
+done
 
 # Extract home_dir from git.ini
 HOME_DIR=$(awk -F'=' '/^home_dir/{print $2}' "$GIT_INI" | tr -d ' ')
@@ -154,7 +142,7 @@ fi
 
 # Apply permissions to home_dir/config and other required files
 echo "Applying permissions..."
-sudo chmod -R 777 "$CURR_DIR/$HOME_DIR/config" "$CURR_DIR/$HOME_DIR/start"
+sudo chmod -R 777 "$CURR_DIR/$HOME_DIR/config" "$CURR_DIR/$HOME_DIR/Start"
 sudo chmod 777 "$CURR_DIR/$HOME_DIR/config.ini"
 sudo chmod 777 "$CURR_DIR/$HOME_DIR/docarize.sh"
 echo "Permissions applied successfully."
@@ -184,11 +172,11 @@ fi
 
 cd "$CURR_DIR" || exit
 
-# Check if 'docker' module is installed, install if missing
+# Ensure 'docker' Python module is installed
 echo "Checking for 'docker' Python module..."
-if ! python -c "import docker" 2>/dev/null; then
+if ! python3 -c "import docker" 2>/dev/null; then
     echo "'docker' module not found. Installing..."
-    pip install docker
+    pip3 install docker
     if [ $? -ne 0 ]; then
         echo "Error: Failed to install 'docker' module."
         exit 1
@@ -200,7 +188,7 @@ fi
 # Run get_results.py to generate environment details
 echo "Running get_results.py..."
 if [ -f "get_results.py" ]; then
-    python "get_results.py"
+    python3 "get_results.py"
     if [ $? -ne 0 ]; then
         echo "Error: get_results.py execution failed."
         exit 1
