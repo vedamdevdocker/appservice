@@ -42,9 +42,18 @@ fi
 # Check and install Python
 if ! command -v python3 &>/dev/null; then
     echo "Installing Python and pip..."
-    sudo yum install -y python3
+    sudo yum install -y python3 python3-pip
+
+    # Create a symlink for python
+    sudo alternatives --install /usr/bin/python python /usr/bin/python3 1
 else
     echo "Python is already installed. Skipping..."
+fi
+
+# Ensure pip is available
+if ! command -v pip &>/dev/null; then
+    echo "Ensuring pip is available..."
+    sudo ln -s /usr/bin/pip3 /usr/bin/pip
 fi
 
 # Check and install Docker
@@ -62,8 +71,8 @@ fi
 # Verify installations
 echo "Verifying installations..."
 git --version
-python3 --version
-pip3 --version
+python --version
+pip --version
 docker --version
 
 echo "Running a test Docker container..."
@@ -94,7 +103,7 @@ fi
 # Update git.ini file with client input and free ports
 if [ -f "$CURR_DIR/gitini_ports_update.py" ]; then
     echo "Running gitini_ports_update.py..."
-    python3 "$CURR_DIR/gitini_ports_update.py"
+    python "$CURR_DIR/gitini_ports_update.py"
     if [ $? -ne 0 ]; then
         echo "Error: gitini_ports_update.py execution failed."
         exit 1
@@ -104,17 +113,16 @@ fi
 # Run update_configini_file.py
 if [ -f "$CURR_DIR/update_configini_file.py" ]; then
     echo "Running update_configini_file.py..."
-    python3 "$CURR_DIR/update_configini_file.py"
+    python "$CURR_DIR/update_configini_file.py"
     if [ $? -ne 0 ]; then
         echo "Error: update_configini_file.py execution failed."
         exit 1
     fi
 fi
 
-
 # Run 01_start.py
 echo "Running 01_start.py..."
-python3 "$CURR_DIR/01_start.py"
+python "$CURR_DIR/01_start.py"
 if [ $? -ne 0 ]; then
     echo "Error: 01_start.py execution failed."
     exit 1
@@ -174,12 +182,11 @@ else
     echo "Warning: docarize.sh not found."
 fi
 
-
 cd "$CURR_DIR" || exit
 
 # Check if 'docker' module is installed, install if missing
 echo "Checking for 'docker' Python module..."
-if ! python3 -c "import docker" 2>/dev/null; then
+if ! python -c "import docker" 2>/dev/null; then
     echo "'docker' module not found. Installing..."
     pip install docker
     if [ $? -ne 0 ]; then
@@ -192,9 +199,8 @@ fi
 
 # Run get_results.py to generate environment details
 echo "Running get_results.py..."
-
 if [ -f "get_results.py" ]; then
-    python3 "get_results.py"
+    python "get_results.py"
     if [ $? -ne 0 ]; then
         echo "Error: get_results.py execution failed."
         exit 1
