@@ -38,6 +38,8 @@ IF EXIST "%CURR_DIR%\update_configini_file.py" (
     )
 )
 
+pause
+
 :: Run the Python script
 python 01_start.py
 IF %ERRORLEVEL% NEQ 0 (
@@ -56,6 +58,17 @@ FOR /F "tokens=1,2 delims==" %%A IN ('findstr "home_dir" "%GIT_INI%"') DO (
 IF NOT EXIST "%CURR_DIR%\%HOME_DIR%" (
     echo Error: Home directory %HOME_DIR% not found.
     EXIT /B 1
+)
+
+:: Copy config.ini from CURR_DIR to HOME_DIR
+IF EXIST "%CURR_DIR%\config.ini" (
+    COPY /Y "%CURR_DIR%\config.ini" "%CURR_DIR%\%HOME_DIR%\"
+    IF %ERRORLEVEL% NEQ 0 (
+        echo Error: Failed to copy config.ini to %HOME_DIR%.
+        EXIT /B 1
+    )
+) ELSE (
+    echo Warning: config.ini not found in %CURR_DIR%.
 )
 
 :: Switch to home directory and then to config directory

@@ -1,6 +1,5 @@
 import os
 import configparser
-import shutil
 
 # Custom configparser that preserves case and formatting
 class CaseInsensitiveConfigParser(configparser.ConfigParser):
@@ -61,6 +60,7 @@ mappings = {
         "instances": ["instances", "instances"],
         "ports": ["instances", "ports"],
         "INSTANCE_NAMES": ["instances", "INSTANCE_NAMES"],
+        "DB_SERVER_HOST_IP": ["instances", "DB_SERVER_HOST_IP"],
         "SEED_DATA": ["instances", "SEED_DATA"],
         "APP_SERVER_HOST": ["AppService", "APP_SERVER_HOST"],
         "APP_SERVER_PORT": ["AppService", "APP_SERVER_PORT"],

@@ -73,6 +73,8 @@ config["other"]["SMTP_HOST"] = system_ip
 config["other"]["SMTP_PORT"] = smtp_port
 config["other"]["company_folder"] = company_short_name
 config["other"]["CONTAINER_PREFIX"] = company_short_name
+config["other"]["DB_SERVER_HOST_IP"] = system_ip
+
 
 # Write updated config back to file
 with open(GIT_INI_FILE, "w", encoding="utf-8") as configfile:
