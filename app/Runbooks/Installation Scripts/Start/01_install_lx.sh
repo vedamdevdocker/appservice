@@ -48,25 +48,36 @@ else
     echo "Python3 is already installed. Skipping..."
 fi
 
-# Ensure pip3 is correctly linked
-if ! command -v pip3 &>/dev/null; then
-    echo "pip3 is missing, installing..."
-    sudo yum install -y python3-pip
+# Create symlink for python to point to python3
+if ! command -v python &>/dev/null; then
+    echo "Creating symlink for python..."
+    sudo ln -s /usr/bin/python3 /usr/bin/python
+else
+    echo "Python symlink already exists. Skipping..."
 fi
 
-# Ensure `pip` command exists
+# Ensure pip is correctly linked (it should point to pip3 due to the python symlink)
 if ! command -v pip &>/dev/null; then
     echo "Creating symlink for pip..."
     sudo ln -s /usr/bin/pip3 /usr/bin/pip
+else
+    echo "pip symlink already exists. Skipping..."
 fi
 
 # Check and install Docker
 if ! command -v docker &>/dev/null; then
     echo "Installing Docker..."
-    sudo amazon-linux-extras enable docker
-    sudo yum install -y docker
-    sudo service docker start
+  
+    # Install Docker using dnf (Amazon Linux 2023)
+    sudo dnf install -y docker
+    
+    # Start Docker service
+    sudo systemctl start docker
+    
+    # Enable Docker to start on boot
     sudo systemctl enable docker
+    
+    # Add the ec2-user to the docker group
     sudo usermod -aG docker ec2-user
 else
     echo "Docker is already installed. Skipping..."
@@ -75,8 +86,8 @@ fi
 # Verify installations
 echo "Verifying installations..."
 git --version
-python3 --version
-pip3 --version
+python --version
+pip --version
 docker --version
 
 echo "Running a test Docker container..."
@@ -108,7 +119,7 @@ fi
 for script in gitini_ports_update.py update_configini_file.py 01_start.py; do
     if [ -f "$CURR_DIR/$script" ]; then
         echo "Running $script..."
-        python3 "$CURR_DIR/$script"
+        python "$CURR_DIR/$script"
         if [ $? -ne 0 ]; then
             echo "Error: $script execution failed."
             exit 1
@@ -147,9 +158,9 @@ sudo chmod 777 "$CURR_DIR/$HOME_DIR/config.ini"
 sudo chmod 777 "$CURR_DIR/$HOME_DIR/docarize.sh"
 echo "Permissions applied successfully."
 
-# Run run_python3.sh from 'instance' directory inside 'config'
+# Run run_python.sh from 'instance' directory inside 'config'
 if [ -d "$CURR_DIR/$HOME_DIR/config/instance" ]; then
-    echo "Found 'instance' directory. Running run_python3.sh..."
+    echo "Found 'instance' directory. Running run_python.sh..."
     cd "$CURR_DIR/$HOME_DIR/config/instance" || exit
     sudo ./run_python3.sh
 else
@@ -174,17 +185,17 @@ cd "$CURR_DIR" || exit
 
 # Ensure 'docker' Python module is installed
 echo "Checking for 'docker' Python module..."
-if ! python3 -c "import docker" 2>/dev/null; then
+if ! python -c "import docker" 2>/dev/null; then
     echo "'docker' module not found. Installing..."
     
     # Upgrade pip to the latest version
-    pip3 install --upgrade pip
+    pip install --upgrade pip
     
     # Install the latest version of urllib3
-    pip3 install --upgrade urllib3
+    pip install --upgrade urllib3
     
     # Now install the docker module
-    pip3 install docker
+    pip install docker
     
     if [ $? -ne 0 ]; then
         echo "Error: Failed to install 'docker' module."
@@ -194,11 +205,10 @@ else
     echo "'docker' module is already installed."
 fi
 
-
 # Run get_results.py to generate environment details
 echo "Running get_results.py..."
 if [ -f "get_results.py" ]; then
-    python3 "get_results.py"
+    python "get_results.py"
     if [ $? -ne 0 ]; then
         echo "Error: get_results.py execution failed."
         exit 1

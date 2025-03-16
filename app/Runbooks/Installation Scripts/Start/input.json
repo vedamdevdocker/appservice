@@ -1,13 +1,12 @@
 {
-  "company_short_name": "RAVA",
-  "company_display_name": "RAVA Trading Operations", 
+  "company_short_name": "NICOLAS",
+  "company_display_name": "Nicolas Trading", 
   "communication_email": "test@test.com",
   "sms": "00358499234457",
   "env": "Development",
   "needed_instances": 3,
   "instance_details": [
-    {"name": "MYZ", "seedata": "Yes"},
-    {"name": "TKY", "seedata": "yes"},
-    {"name": "ECF", "seedata": "No"}
+    {"name": "ALPHA", "seedata": "Yes"},
+    {"name": "BETA", "seedata": "yes"}
   ]
 }
