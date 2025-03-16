@@ -2,6 +2,7 @@ import os
 import configparser
 import docker
 import socket
+import requests
 
 # Custom configparser that preserves case and formatting
 class CaseInsensitiveConfigParser(configparser.ConfigParser):
@@ -12,17 +13,14 @@ class CaseInsensitiveConfigParser(configparser.ConfigParser):
 GIT_INI_PATH = os.path.join(os.getcwd(), "git.ini")
 print(f"Checking for git.ini at: {GIT_INI_PATH}")
 
-# Check if git.ini exists
 if not os.path.exists(GIT_INI_PATH):
     print(f"Error: git.ini not found at {GIT_INI_PATH}")
     exit(1)
 
-# Read git.ini
 git_config = CaseInsensitiveConfigParser()
 git_config.read(GIT_INI_PATH)
 print("git.ini loaded successfully.")
 
-# Extract home_dir
 if "gitdetails" not in git_config or "home_dir" not in git_config["gitdetails"]:
     print("Error: 'home_dir' not found in [gitdetails] section of git.ini")
     exit(1)
@@ -30,7 +28,6 @@ if "gitdetails" not in git_config or "home_dir" not in git_config["gitdetails"]:
 HOME_DIR = os.path.join(os.getcwd(), git_config["gitdetails"]["home_dir"])
 print(f"Resolved HOME_DIR: {HOME_DIR}")
 
-# Define config.ini and db_instances paths
 CONFIG_FILE = os.path.join(HOME_DIR, "config.ini")
 DB_INSTANCES_DIR = os.path.join(HOME_DIR, "db_instances")
 RESULTS_FILE = os.path.join(HOME_DIR, "results.txt")
@@ -53,27 +50,35 @@ def get_system_ip():
         print(f"Error getting system IP: {e}")
         return "127.0.0.1"
 
-def get_web_application_details(config):
+def get_public_ip():
+    try:
+        response = requests.get("https://api64.ipify.org?format=text", timeout=5)
+        return response.text.strip()
+    except Exception as e:
+        print(f"Error getting public IP: {e}")
+        return "Unknown"
+
+def get_web_application_details(config, public_ip):
     system_ip = get_system_ip()
-    web_client_host = config.get("WebClient", "WEB_CLIENT_HOST", fallback="0.0.0.0")
     web_client_port = config.get("WebClient", "WEB_CLIENT_PORT", fallback="")
     web_client_protocol = config.get("WebClient", "WEB_CLIENT_PROTOCOL", fallback="https")
     
     ui_url1 = f"{web_client_protocol}://{system_ip}:{web_client_port}"
     ui_url2 = f"{web_client_protocol}://localhost:{web_client_port}"
+    ui_url3 = f"{web_client_protocol}://{public_ip}:{web_client_port}" if public_ip != "Unknown" else "Public IP not available"
     
-    return f"Web Application Details:\nUI_URL1={ui_url1}\nUI_URL2={ui_url2}\n"
+    return f"Web Application Details:\nUI_URL1={ui_url1}\nUI_URL2={ui_url2}\nUI_URL3={ui_url3}\n"
 
-def get_backend_application_details(config):
+def get_backend_application_details(config, public_ip):
     system_ip = get_system_ip()
-    backend_host = config.get("AppService", "APP_SERVER_HOST", fallback="0.0.0.0")
     backend_port = config.get("AppService", "APP_SERVER_PORT", fallback="")
     backend_protocol = config.get("AppService", "APP_SERVER_PROTOCOL", fallback="https")
     
     api_url1 = f"{backend_protocol}://{system_ip}:{backend_port}"
     api_url2 = f"{backend_protocol}://localhost:{backend_port}"
+    api_url3 = f"{backend_protocol}://{public_ip}:{backend_port}" if public_ip != "Unknown" else "Public IP not available"
     
-    return f"Backend Application Details:\nAPI_URL1={api_url1}\nAPI_URL2={api_url2}\n"
+    return f"Backend Application Details:\nAPI_URL1={api_url1}\nAPI_URL2={api_url2}\nAPI_URL3={api_url3}\n"
 
 def get_database_details(config):
     db_host_ip = config.get("instances", "DB_SERVER_HOST_IP", fallback="localhost")
@@ -121,7 +126,6 @@ def get_container_details():
                 f"Access Container: docker exec -it {container.name} /bin/sh\n"
             )
 
-            # Add volume details if present
             if volume_list:
                 for volume in volume_list:
                     container_details += f"Inspect Volume: docker volume inspect {volume}\n"
@@ -136,9 +140,10 @@ def get_container_details():
 def generate_environment_details():
     try:
         config = get_config()
+        public_ip = get_public_ip()
         
-        web_details = get_web_application_details(config)
-        backend_details = get_backend_application_details(config)
+        web_details = get_web_application_details(config, public_ip)
+        backend_details = get_backend_application_details(config, public_ip)
         db_details = get_database_details(config)
         container_details = get_container_details()
         
