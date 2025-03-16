@@ -4,7 +4,7 @@
   "communication_email": "test@test.com",
   "sms": "00358499234457",
   "env": "Development",
-  "needed_instances": 3,
+  "needed_instances": 2,
   "instance_details": [
     {"name": "ALPHA", "seedata": "Yes"},
     {"name": "BETA", "seedata": "yes"}
