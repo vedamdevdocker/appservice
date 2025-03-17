@@ -43,26 +43,44 @@ fi
 if ! command -v python3 &>/dev/null; then
     echo "Installing Python3 and pip3..."
     sudo yum install -y python3 python3-pip
-    sudo alternatives --install /usr/bin/python python /usr/bin/python3 1
+
+    # Verify installation
+    if ! command -v python3 &>/dev/null; then
+        echo "Error: Python3 installation failed."
+        exit 1
+    fi
 else
     echo "Python3 is already installed. Skipping..."
 fi
 
-# Create symlink for python to point to python3
+# Ensure Python3 is correctly set as default
 if ! command -v python &>/dev/null; then
-    echo "Creating symlink for python..."
-    sudo ln -s /usr/bin/python3 /usr/bin/python
+    echo "Creating symlink for python -> python3..."
+    sudo ln -sf "$(command -v python3)" /usr/bin/python
 else
     echo "Python symlink already exists. Skipping..."
 fi
 
-# Ensure pip is correctly linked (it should point to pip3 due to the python symlink)
-if ! command -v pip &>/dev/null; then
-    echo "Creating symlink for pip..."
-    sudo ln -s /usr/bin/pip3 /usr/bin/pip
+# Ensure pip3 is installed and accessible
+if ! command -v pip3 &>/dev/null; then
+    echo "pip3 not found. Installing pip..."
+    sudo python3 -m ensurepip --default-pip
+    sudo python3 -m pip install --upgrade pip
+fi
+
+# Ensure pip is correctly linked to pip3
+PIP_PATH=$(command -v pip3)
+if [ -n "$PIP_PATH" ] && ! command -v pip &>/dev/null; then
+    echo "Creating symlink for pip -> pip3..."
+    sudo ln -sf "$PIP_PATH" /usr/bin/pip
 else
     echo "pip symlink already exists. Skipping..."
 fi
+
+# Verify installations
+echo "Final verification..."
+python --version || echo "Error: Python symlink failed!"
+pip --version || echo "Error: pip symlink failed!"
 
 # Check and install Docker
 if ! command -v docker &>/dev/null; then
@@ -191,8 +209,8 @@ if ! python -c "import docker" 2>/dev/null; then
     # Upgrade pip to the latest version
     pip install --upgrade pip
     
-    # Install the latest version of urllib3
-    pip install --upgrade urllib3
+    # Install the latest version of urllib3 but compatible with awscli and requests
+    pip install 'urllib3<1.27,>=1.25.4' --upgrade
     
     # Now install the docker module
     pip install docker
