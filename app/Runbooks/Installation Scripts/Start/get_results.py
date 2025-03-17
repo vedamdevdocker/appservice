@@ -28,6 +28,7 @@ if "gitdetails" not in git_config or "home_dir" not in git_config["gitdetails"]:
 HOME_DIR = os.path.join(os.getcwd(), git_config["gitdetails"]["home_dir"])
 print(f"Resolved HOME_DIR: {HOME_DIR}")
 HOME_DIR_NAME = os.path.basename(HOME_DIR)
+print(f"Resolved HOME_DIR_NAME: {HOME_DIR_NAME}")
 
 CONFIG_FILE = os.path.join(HOME_DIR, "config.ini")
 DB_INSTANCES_DIR = os.path.join(HOME_DIR, "db_instances")
