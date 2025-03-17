@@ -109,35 +109,47 @@ def get_database_details(config):
     return db_details
 
 def get_container_details():
-    try:
-        client = docker.from_env()
-        containers = client.containers.list(all=True)
-        container_details = "Container Details:\n"
-        
-        for container in containers:
-            container_info = container.attrs
-            image_name = container_info["Config"]["Image"]
-            volumes = container_info["Mounts"]
-            volume_list = [v["Name"] for v in volumes if "Name" in v]
-            
-            container_details += (
-                f"Name: {container.name}\n"
-                f"Status: {container.status}\n"
-                f"Image: {image_name}\n"
-                f"Volumes: {', '.join(volume_list) if volume_list else 'No volumes mounted'}\n"
-                f"Access Container: docker exec -it {container.name} /bin/sh\n"
-            )
+    max_retries = 5  # Number of retries
+    wait_time = 5  # Wait time in seconds between retries
 
-            if volume_list:
-                for volume in volume_list:
-                    container_details += f"Inspect Volume: docker volume inspect {volume}\n"
+    attempt = 0
+    while attempt < max_retries:
+        try:
+            client = docker.from_env()
+            containers = client.containers.list(all=True)
 
-            container_details += "\n"
-        
-        return container_details
-    except Exception as e:
-        print(f"Error getting container details: {e}")
-        return "Error retrieving container details.\n"
+            if not containers:
+                raise Exception("No containers found. Docker might not be running.")
+
+            container_details = "Container Details:\n"
+            for container in containers:
+                container_info = container.attrs
+                image_name = container_info["Config"]["Image"]
+                volumes = container_info["Mounts"]
+                volume_list = [v["Name"] for v in volumes if "Name" in v]
+
+                container_details += (
+                    f"Name: {container.name}\n"
+                    f"Status: {container.status}\n"
+                    f"Image: {image_name}\n"
+                    f"Volumes: {', '.join(volume_list) if volume_list else 'No volumes mounted'}\n"
+                    f"Access Container: docker exec -it {container.name} /bin/sh\n"
+                )
+
+                if volume_list:
+                    for volume in volume_list:
+                        container_details += f"Inspect Volume: docker volume inspect {volume}\n"
+
+                container_details += "\n"
+
+            return container_details
+
+        except Exception as e:
+            print(f"Attempt {attempt + 1} failed: {e}")
+            attempt += 1
+            time.sleep(wait_time)  # Wait before retrying
+
+    return "Error: Could not retrieve container details after multiple attempts.\n"
 
 def generate_environment_details():
     try:
