@@ -169,12 +169,12 @@ cd "$CURR_DIR" || exit
 
 # Ensure 'docker' Python module is installed
 echo "Checking for 'docker' Python module..."
-if ! python -c "import docker" 2>/dev/null; then
+if ! python3 -c "import docker" 2>/dev/null; then
     echo "'docker' module not found. Installing..."
-    pip install --upgrade pip
-	pip install 'urllib3<1.27,>=1.25.4' --upgrade
-	pip install --upgrade awscli
-    pip install docker
+    python3 -m pip install --upgrade pip
+    python3 -m pip install 'urllib3<1.27,>=1.25.4' --upgrade
+    python3 -m pip install --upgrade awscli
+    python3 -m pip install docker
 else
     echo "'docker' module is already installed."
 fi
@@ -182,7 +182,7 @@ fi
 # Run get_results.py to generate environment details
 echo "Running get_results.py..."
 if [ -f "get_results.py" ]; then
-    python "get_results.py"
+    python3 "get_results.py"
 else
     echo "Warning: get_results.py not found."
 fi
