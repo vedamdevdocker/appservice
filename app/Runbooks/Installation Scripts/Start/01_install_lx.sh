@@ -6,21 +6,21 @@ set -e  # Exit script on any error
 echo "Updating package list and installing dependencies..."
 sudo yum update -y
 
+# Function to install dependencies only if not already installed
+install_if_missing() {
+    if ! command -v $1 &>/dev/null; then
+        echo "Installing $1..."
+        sudo yum install -y $2
+    else
+        echo "$1 is already installed. Skipping..."
+    fi
+}
+
 # Check and install curl
-if ! command -v curl &>/dev/null; then
-    echo "Installing curl..."
-    sudo yum install -y curl
-else
-    echo "curl is already installed. Skipping..."
-fi
+install_if_missing "curl" "curl"
 
 # Check and install GCC, GCC-C++, and make
-if ! command -v gcc &>/dev/null || ! command -v g++ &>/dev/null || ! command -v make &>/dev/null; then
-    echo "Installing GCC, GCC-C++, and make..."
-    sudo yum install -y gcc gcc-c++ make
-else
-    echo "GCC, GCC-C++, and make are already installed. Skipping..."
-fi
+install_if_missing "gcc" "gcc gcc-c++ make"
 
 # Check and install Docker Compose
 if ! command -v docker-compose &>/dev/null; then
@@ -32,28 +32,12 @@ else
 fi
 
 # Check and install Git
-if ! command -v git &>/dev/null; then
-    echo "Installing Git..."
-    sudo yum install -y git
-else
-    echo "Git is already installed. Skipping..."
-fi
+install_if_missing "git" "git"
 
 # Check and install Python3 and pip3
-if ! command -v python3 &>/dev/null; then
-    echo "Installing Python3 and pip3..."
-    sudo yum install -y python3 python3-pip
+install_if_missing "python3" "python3 python3-pip"
 
-    # Verify installation
-    if ! command -v python3 &>/dev/null; then
-        echo "Error: Python3 installation failed."
-        exit 1
-    fi
-else
-    echo "Python3 is already installed. Skipping..."
-fi
-
-# Ensure Python3 is correctly set as default
+# Ensure Python3 is correctly set as default if not already done
 if ! command -v python &>/dev/null; then
     echo "Creating symlink for python -> python3..."
     sudo ln -sf "$(command -v python3)" /usr/bin/python
@@ -85,29 +69,18 @@ pip --version || echo "Error: pip symlink failed!"
 # Check and install Docker
 if ! command -v docker &>/dev/null; then
     echo "Installing Docker..."
-  
-    # Install Docker using dnf (Amazon Linux 2023)
     sudo dnf install -y docker
-    
-    # Start Docker service
     sudo systemctl start docker
-    
-    # Enable Docker to start on boot
     sudo systemctl enable docker
-    
-    # Add the ec2-user to the docker group
     sudo usermod -aG docker ec2-user
 else
     echo "Docker is already installed. Skipping..."
 fi
 
-# Verify installations
-echo "Verifying installations..."
-git --version
-python --version
-pip --version
-docker --version
+# Verify Docker installation
+docker --version || echo "Error: Docker installation failed!"
 
+# Running a test Docker container
 echo "Running a test Docker container..."
 sudo docker run hello-world
 
@@ -133,15 +106,13 @@ if [ ! -f "$GIT_INI" ]; then
     exit 1
 fi
 
-# Run Python scripts
+# Run Python scripts (Ensure they are only executed if they exist)
 for script in gitini_ports_update.py update_configini_file.py 01_start.py; do
     if [ -f "$CURR_DIR/$script" ]; then
         echo "Running $script..."
         python "$CURR_DIR/$script"
-        if [ $? -ne 0 ]; then
-            echo "Error: $script execution failed."
-            exit 1
-        fi
+    else
+        echo "Warning: $script not found, skipping."
     fi
 done
 
@@ -158,13 +129,9 @@ if [ ! -d "$CURR_DIR/$HOME_DIR" ]; then
     exit 1
 fi
 
-# Copy config.ini from CURR_DIR to HOME_DIR
+# Copy config.ini from CURR_DIR to HOME_DIR if it exists
 if [ -f "$CURR_DIR/config.ini" ]; then
     cp -f "$CURR_DIR/config.ini" "$CURR_DIR/$HOME_DIR/"
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to copy config.ini to $HOME_DIR."
-        exit 1
-    fi
 else
     echo "Warning: config.ini not found in $CURR_DIR."
 fi
@@ -174,7 +141,6 @@ echo "Applying permissions..."
 sudo chmod -R 777 "$CURR_DIR/$HOME_DIR/config" "$CURR_DIR/$HOME_DIR/Start"
 sudo chmod 777 "$CURR_DIR/$HOME_DIR/config.ini"
 sudo chmod 777 "$CURR_DIR/$HOME_DIR/docarize.sh"
-echo "Permissions applied successfully."
 
 # Run run_python.sh from 'instance' directory inside 'config'
 if [ -d "$CURR_DIR/$HOME_DIR/config/instance" ]; then
@@ -190,7 +156,7 @@ echo "Running run_python2.sh..."
 cd "$CURR_DIR/$HOME_DIR/config" || exit
 sudo ./run_python2.sh
 
-# Switch to home directory and run docarize.sh if present
+# Run docarize.sh if it exists
 echo "Switching to home directory and running docarize.sh..."
 cd "$CURR_DIR/$HOME_DIR" || exit
 if [ -f "docarize.sh" ]; then
@@ -205,20 +171,10 @@ cd "$CURR_DIR" || exit
 echo "Checking for 'docker' Python module..."
 if ! python -c "import docker" 2>/dev/null; then
     echo "'docker' module not found. Installing..."
-    
-    # Upgrade pip to the latest version
     pip install --upgrade pip
-    
-    # Install the latest version of urllib3 but compatible with awscli and requests
-    pip install 'urllib3<1.27,>=1.25.4' --upgrade
-    
-    # Now install the docker module
+	pip install 'urllib3<1.27,>=1.25.4' --upgrade
+	pip install --upgrade awscli
     pip install docker
-    
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to install 'docker' module."
-        exit 1
-    fi
 else
     echo "'docker' module is already installed."
 fi
@@ -227,10 +183,6 @@ fi
 echo "Running get_results.py..."
 if [ -f "get_results.py" ]; then
     python "get_results.py"
-    if [ $? -ne 0 ]; then
-        echo "Error: get_results.py execution failed."
-        exit 1
-    fi
 else
     echo "Warning: get_results.py not found."
 fi
