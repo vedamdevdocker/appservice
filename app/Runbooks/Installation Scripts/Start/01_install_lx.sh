@@ -179,6 +179,21 @@ else
     echo "'docker' module is already installed."
 fi
 
+# Call docker_user_restart_lx.sh after ensuring the 'docker' module is installed
+SCRIPT_PATH="$(pwd)/docker_user_restart_lx.sh"
+
+if [ -f "$SCRIPT_PATH" ]; then
+    echo "Executing docker_user_restart_lx.sh..."
+    sudo chmod +x "$SCRIPT_PATH"  # Ensure script has execute permissions
+	echo "Operating system is going to restart , so please run the get-results.py manually as it is first instance."
+	sleep 15
+    sudo "$SCRIPT_PATH"
+else
+    echo "Error: docker_user_restart_lx.sh not found!"
+fi
+
+echo "The Python script  get-results.py is automatically executed as it is not first instance."
+sleep 15
 # Run get_results.py to generate environment details
 echo "Running get_results.py..."
 if [ -f "get_results.py" ]; then
