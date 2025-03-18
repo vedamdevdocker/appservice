@@ -3,12 +3,43 @@ import configparser
 import docker
 import socket
 import requests
-import time  # Add this line
+import time
+import sys
+import json
+import subprocess  # Import subprocess to run shell commands
 
 # Custom configparser that preserves case and formatting
 class CaseInsensitiveConfigParser(configparser.ConfigParser):
     def optionxform(self, optionstr):
         return optionstr  # Preserve case
+
+# Function to check Docker permissions
+def check_docker_permissions():
+    try:
+        # Check if the current user has access to Docker
+        client = docker.from_env()
+        # Try fetching the Docker version to see if we have access
+        client.ping()
+        print("Docker is accessible.")
+    except docker.errors.DockerException as e:
+        print(f"Error: Docker permissions issue - {e}")
+        # Suggest adding the user to the 'docker' group
+        print("You may need to add the user to the 'docker' group:")
+        print("Run 'sudo usermod -aG docker $(whoami)' and then log out and log back in.")
+        
+        # Attempt to automatically add the user to the docker group (requires sudo)
+        if os.geteuid() == 0:  # Check if the script is run with sudo (root user)
+            try:
+                user = os.getenv("USER")
+                print(f"Attempting to add user '{user}' to docker group...")
+                subprocess.run(["usermod", "-aG", "docker", user], check=True)
+                print(f"User {user} has been added to the docker group. Please log out and log back in.")
+                sys.exit(1)  # Exit after attempting to fix
+            except subprocess.CalledProcessError as sub_e:
+                print(f"Error while trying to add user to docker group: {sub_e}")
+                sys.exit(1)  # Exit the script if the operation fails
+        else:
+            sys.exit(1)  # Exit if not running as root
 
 # Define file paths based on custom HOME_DIR from git.ini
 GIT_INI_PATH = os.path.join(os.getcwd(), "git.ini")
@@ -110,47 +141,52 @@ def get_database_details(config):
     return db_details
 
 def get_container_details():
-    max_retries = 5  # Number of retries
-    wait_time = 5  # Wait time in seconds between retries
+    try:
+        home_dir_prefix = HOME_DIR_NAME.lower()
+        result = subprocess.run(
+            ["docker", "ps", "-a", "--format", "{{.ID}} {{.Names}}"], 
+            capture_output=True, text=True, check=True
+        )
+        container_lines = result.stdout.strip().split("\n")
 
-    attempt = 0
-    while attempt < max_retries:
-        try:
-            client = docker.from_env()
-            containers = client.containers.list(all=True)
+        if not container_lines or container_lines[0] == "":
+            return "No matching containers found. Docker might not be running."
 
-            if not containers:
-                raise Exception("No containers found. Docker might not be running.")
+        container_details = "Filtered Container Details:\n"
 
-            container_details = "Container Details:\n"
-            for container in containers:
-                container_info = container.attrs
-                image_name = container_info["Config"]["Image"]
-                volumes = container_info["Mounts"]
-                volume_list = [v["Name"] for v in volumes if "Name" in v]
+        for line in container_lines:
+            container_id, container_name = line.split(" ", 1)
 
-                container_details += (
-                    f"Name: {container.name}\n"
-                    f"Status: {container.status}\n"
-                    f"Image: {image_name}\n"
-                    f"Volumes: {', '.join(volume_list) if volume_list else 'No volumes mounted'}\n"
-                    f"Access Container: docker exec -it {container.name} /bin/sh\n"
-                )
+            if not container_name.lower().startswith(home_dir_prefix):
+                continue
 
-                if volume_list:
-                    for volume in volume_list:
-                        container_details += f"Inspect Volume: docker volume inspect {volume}\n"
+            inspect_result = subprocess.run(["docker", "inspect", container_id], capture_output=True, text=True, check=True)
+            container_info = json.loads(inspect_result.stdout)[0]
 
-                container_details += "\n"
+            status = container_info["State"]["Status"]
+            image = container_info["Config"]["Image"]
+            volumes = container_info.get("Mounts", [])
 
-            return container_details
+            volume_mappings = [
+                f"{vol.get('Name', vol.get('Source', 'Unknown'))} -> {vol['Destination']}" 
+                for vol in volumes
+            ]
+            
+            print(f"DEBUG: Volumes for {container_name} -> {volumes}")  # Debugging line
 
-        except Exception as e:
-            print(f"Attempt {attempt + 1} failed: {e}")
-            attempt += 1
-            time.sleep(wait_time)  # Wait before retrying
+            container_details += (
+                f"Name: {container_name}\n"
+                f"Status: {status}\n"
+                f"Image: {image}\n"
+                f"Volumes: {', '.join(volume_mappings) if volume_mappings else 'No volumes found'}\n"
+                f"Access Container: docker exec -it {container_name} /bin/sh\n"
+                "----------------------------------------\n"
+            )
 
-    return "Error: Could not retrieve container details after multiple attempts.\n"
+        return container_details if "Name:" in container_details else "No matching containers found."
+
+    except subprocess.CalledProcessError as e:
+        return f"Error retrieving container details: {e}"
 
 def generate_environment_details():
     try:
@@ -171,4 +207,8 @@ def generate_environment_details():
     except Exception as e:
         print(f"Error generating environment details: {e}")
 
+# Check Docker permissions before proceeding with the rest of the script
+check_docker_permissions()
+
+# Generate environment details
 generate_environment_details()
