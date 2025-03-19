@@ -25,10 +25,10 @@ LOG_FILE_PATH = "/app/Logs/"
 # config.py
 DB_INSTANCES_BASE_PATH = '/app/configs/'
 APP_SERVER_HOST = '192.168.1.182'
-APP_SERVER_PORT = '5223'
+APP_SERVER_PORT = '54840'
 APP_SERVER_PROTOCOL = 'https'
 
-COMPANY_FOLDER = 'Company_5'
+COMPANY_FOLDER = 'DEV'
 SYSTEM_FOLDER = 'system'
 CONFIG_FOLDER = 'config'
 PROJECT_ROOT = 'application'

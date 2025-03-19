@@ -11,7 +11,7 @@ Create and Export the dump file
 	7. Now copy the aab_backupdump.sql to local machine (for example windows using winscp to take backup further )
 
 Import the dump file 
-	How to Import it in another database
+	How to Import it in another database -NEW INSTRUCTIONS
 	1. Connect to Target database 
 		mysql -u your_username -p -h your_host -P your_port your_database_name < path/to/aap_sqldump.sql
 		Navigate to the directory where the aap_sqldump.sql file is there

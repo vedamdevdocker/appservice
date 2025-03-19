@@ -21,7 +21,7 @@ COPY certs/appservice/server.crt /etc/ssl/certs/appservice.crt
 COPY certs/appservice/server.key /etc/ssl/private/appservice.key
 
 # Expose HTTPS port
-EXPOSE 5223
+EXPOSE 54840
 
 # Start Gunicorn with HTTPS
-CMD ["gunicorn", "-b", "0.0.0.0:5223", "--certfile=/etc/ssl/certs/appservice.crt", "--keyfile=/etc/ssl/private/appservice.key", "app:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:54840", "--certfile=/etc/ssl/certs/appservice.crt", "--keyfile=/etc/ssl/private/appservice.key", "app:app"]
