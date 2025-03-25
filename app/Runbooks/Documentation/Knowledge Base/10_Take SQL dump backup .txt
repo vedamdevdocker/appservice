@@ -1,5 +1,5 @@
-How to create a mysql dump from container mysql 
-
+How to create a mysql dump from container mysql .
+-
 Create and Export the dump file
 	1. run docker ps and find the mysql database container 
 	2. docker exec -it <container_name> sh
@@ -11,7 +11,7 @@ Create and Export the dump file
 	7. Now copy the aab_backupdump.sql to local machine (for example windows using winscp to take backup further )
 
 Import the dump file 
-	How to Import it in another database -NEW INSTRUCTIONS
+	How to Import it in another database -DB_TAG
 	1. Connect to Target database 
 		mysql -u your_username -p -h your_host -P your_port your_database_name < path/to/aap_sqldump.sql
 		Navigate to the directory where the aap_sqldump.sql file is there
