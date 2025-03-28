@@ -34,4 +34,4 @@ if __name__ == "__main__":
     main_batches = get_sorted_batch_files(current_directory, 2)
     execute_batch_files(main_batches)
 
-    print("All batch files executed successfully.")
+    print("All batch files processed successfully.")

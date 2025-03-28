@@ -1,6 +1,6 @@
 Nginx Setups and configure to run Python flask production
 
-Step 1: Install Nginx (if not installed already)
+Step 1: Install Nginx (if not installed already) for reverse proxy setup
 	Download the Windows version of Nginx from the official website: Nginx Downloads.
 	Extract the ZIP file to a folder, for example: C:\nginx.
 	Inside the folder, you should have the following:
