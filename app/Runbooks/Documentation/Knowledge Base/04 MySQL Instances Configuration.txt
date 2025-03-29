@@ -1,7 +1,7 @@
 This document will help how to setup Company_x directories , instances & connect to those instances
 
 Company folder structure :
-SAS Application directory : C:\SAS Opera\Companies
+SAS Application directory example: C:\SAS Opera\Companies
 For example there are any Company sub directory exists like below they look like below
 	C:\SAS Opera\Companies\Company_0
 	C:\SAS Opera\Companies\Company_1
