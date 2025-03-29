@@ -20,10 +20,10 @@ git add .
 git commit -m "%commit_msg%"
 
 :: Switch to the 'dev' branch
-git checkout dev
+git checkout main
 
 :: Push changes to GitHub
-git push origin dev
+git push origin main
 
 :: Create a Git tag with user input tag name
 git tag %tag_name%
