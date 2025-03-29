@@ -13,8 +13,8 @@ set /p tag_name="Enter tag name (e.g., CONFIG_NEW_10): "
 :: Show Git Status
 git status
 
-:: Stage all changes
-git add .
+:: Force stage all changes (including deletions)
+git add --all
 
 :: Verify if files were staged
 git status
