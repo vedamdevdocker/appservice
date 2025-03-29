@@ -16,25 +16,23 @@ git status
 :: Stage all changes
 git add .
 
+:: Verify if files were staged
+git status
+
 :: Commit the changes with user input message
 git commit -m "%commit_msg%"
 
-:: Switch to the 'dev' branch
+:: Ensure we are on 'main' branch
 git checkout main
 
 :: Push changes to GitHub
 git push origin main
 
-:: Create a Git tag with user input tag name
+:: Create and push the tag
 git tag %tag_name%
-
-:: Push the tag to GitHub
 git push origin --tags
 
-:: Show commit history with tags
-git log --oneline --decorate --graph --all
-
-:: Verify if the tag exists in the remote repository
+:: Verify tag exists remotely
 git ls-remote --tags origin
 
 echo.
